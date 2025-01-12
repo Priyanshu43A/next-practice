@@ -3,9 +3,32 @@ import blogs from '@/app/_libs/BlogsMock';
 import ReactMarkdown from "react-markdown";
 import { Clock, ThumbsUp, MessageCircle, Calendar, User, Tag, RefreshCw } from 'lucide-react';
 
-const BlogPage = async ({ params }: { params: { blogId: string } }) => {
-  const { blogId } = await params;
-  
+type BlogData = {
+  id: string;
+  title: string;
+  category: string;
+  author: string;
+  publishedDate: string;
+  updatedDate: string;
+  readTime: number;
+  content: string;
+  likes: number;
+  comments: { user: string; comment: string; date: string }[];
+  reviews: { reviewer: string; rating: number; review: string }[];
+  tags: string[];
+};
+
+type BlogPageProps = {
+  params: {
+    blogId: string;
+  };
+};
+
+const BlogPage = async ({ params }: BlogPageProps) => {
+  const { blogId } = params;  // Destructuring the blogId directly from params
+  // console.log(params);
+  // console.log(blogId);
+
   const blogData = await fetchBlogData(blogId);
 
   if (!blogData) {
@@ -18,7 +41,7 @@ const BlogPage = async ({ params }: { params: { blogId: string } }) => {
     );
   }
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -132,10 +155,9 @@ const BlogPage = async ({ params }: { params: { blogId: string } }) => {
   );
 };
 
-const fetchBlogData = async (blogId: string) => {
+const fetchBlogData = async (blogId: string): Promise<BlogData | null> => {
   const mockDatabase = blogs; // Assuming `blogs` is an array of blog objects
   return mockDatabase.find(blog => blog.id === blogId) || null;
 };
-
 
 export default BlogPage;
